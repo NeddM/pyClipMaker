@@ -1,6 +1,6 @@
 import os
-from PIL import Image
-from moviepy.editor import AudioFileClip, ImageClip, vfx, ColorClip, VideoFileClip
+import subprocess
+from moviepy.editor import AudioFileClip, ImageClip, vfx
 
 
 def directorios():
@@ -15,13 +15,13 @@ def directorios():
 
 
 def seleccionarPortada():
-    files = os.listdir()
-    image_files = [f for f in files if f.endswith((".png", ".jpg", ".jpeg"))]
-    if len(image_files) != 1:
+    archivo = os.listdir()
+    portada = [f for f in archivo if f.endswith((".png", ".jpg", ".jpeg"))]
+    if len(portada) != 1:
         raise ValueError(
             "Hay más de un archivo de imagen en la carpeta del script")
 
-    return image_files[0]
+    return portada[0]
 
 
 def crearVideo(ruta, rutaMusica, portada):
@@ -35,6 +35,10 @@ def crearVideo(ruta, rutaMusica, portada):
             clip.write_videofile(f"{ruta}/Procesado/{archivo}.mp4", fps=24)
             clip.resize((1920, 1080))
 
+            limpiarPantalla()
+
+    print("¡Archivos creados satisfactoriamente!")
+
 
 def borrarBasura(ruta):
     musicaResiduo = os.listdir(ruta)
@@ -44,7 +48,15 @@ def borrarBasura(ruta):
             os.remove(rutaCompleta)
 
 
+def limpiarPantalla():
+    if os.name == "nt":
+        subprocess.call("cls", shell=True)
+    else:
+        subprocess.call("clear", shell=True)
+
+
 def main():
+    limpiarPantalla()
     ruta, rutaMusica = directorios()
     portada = seleccionarPortada()
     crearVideo(ruta, rutaMusica, portada)
